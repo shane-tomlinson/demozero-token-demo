@@ -12,7 +12,7 @@ const init = async () => {
   await env.bootstrapProcess();
   const app = require('./app');
 
-  const port = normalizePort(process.env.PORT || '4000');
+  const port = normalizePort(process.env.PORT || "4040");
   app.set('port', port);
 
   console.log('>>> Using env:');

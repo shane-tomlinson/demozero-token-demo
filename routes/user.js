@@ -8,6 +8,7 @@ const { getEnv } = require('../lib/env');
 const { APP_LOGOUT_URL } = require('../lib/constants');
 
 router.get('/', ensureLoggedIn, (req, res, next) => {
+  console.log({ user: req.user });
   renderUserPage(req, res);
 });
 
@@ -37,9 +38,15 @@ router.get('/userinfo', ensureLoggedIn, async (req, res, next) => {
 const renderUserPage = (req, res, data = {}) => {
   const idToken = data.idToken || req.user.extraParams.id_token;
   const accessToken = data.accessToken || req.user.extraParams.access_token;
-
-  const decodedIDToken = jwtDecode(idToken);
+  let decodedIDToken = "";
   let decodedAccessToken = '';
+
+  try {
+    decodedIDToken = jwtDecode(idToken);
+  } catch (error) {
+    decodedIDToken = "Unable to decode";
+  }
+
   try {
     decodedAccessToken = jwtDecode(accessToken);
   } catch (error) {

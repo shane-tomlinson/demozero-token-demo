@@ -36,6 +36,24 @@ block content
           a(href="login")
             button(id="signinButton" class="btn btn-primary") Login with no organization
   div(class="row mt-3")
+    div(class="col-sm-6")
+      div(class="card")
+        h5(class="card-header") Login with PAR
+        div(class="card-body")
+          p(class="card-text") Use a pushed authorization request (PAR)
+          a(href="loginWithPar")
+            button(id="signinButton" class="btn btn-primary") Login with PAR
+    div(class="col-sm-6")
+      div(class="card")
+        h5(class="card-header") Login with RAR
+        div(class="card-body")
+          p(class="card-text") Use a rich authorization request (RAR)
+          form(name="rar" method="post" action="rar")
+            div(class="form-group")
+              label(for="authorization_details") authorization_details
+              textarea(id="authorization_details" name="authorization_details" class="form-control" placeholder='[{"type":"payment-initiation"}]') [{"type":"payment-initiation", "merchant":"Deliveroo", "amount": "£16.76"}]
+            input(type="submit" value="Login with RAR" class="btn btn-primary")
+  div(class="row mt-3")
     div(class="col-sm-12")
       div(class="card")
         h5(class="card-header") Invitations
@@ -101,6 +119,7 @@ block content
             div(class="form-group")
               <label for="audience">Audience</label>
               select(id="audience" name="audience" class="form-control")
+                option
                 each audience in audienceList
                   if (selectedAudience === audience)
                     option(value=audience selected) #{audience}
@@ -109,6 +128,15 @@ block content
             div(class="form-group")
               <label for="audience">Scope</label>
               input(id="scope" name="scope" value="#{scope}", class="form-control", size="20")
+            div(class="form-group")
+              <label for="response_type">Response type</label>
+              select(id="response_type" name="response_type" class="form-control")
+                each responseType in responseTypeList 
+                  if (selectedResponseType === responseType)
+                    option(value=responseType selected) #{responseType}
+                  else
+                    option(value=responseType) #{responseType}
             input(type="submit" value="Save Configuration" class="btn btn-primary")
             small(id="configurationHelp" class="form-text text-muted") Future calls to /authorize will use these values. They will be reset when the app restarts.
+
     div(class="col-sm-6") &nbsp;
