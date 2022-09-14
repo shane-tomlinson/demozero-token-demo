@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 const debug = require('debug')('nodejs-regular-webapp2:server');
 const https = require('https');
 const fs = require('fs');
+const appBuilder = require("./app");
 dotenv.config();
 
 const env = require('./lib/env');
@@ -10,7 +11,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const init = async () => {
   await env.bootstrapProcess();
-  const app = require('./app');
+  const app = await appBuilder();
 
   const port = normalizePort(process.env.PORT || "4040");
   app.set('port', port);

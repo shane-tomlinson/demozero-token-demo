@@ -4,7 +4,8 @@
   "description": "This is a prototype nodejs quickstart project to demonstrate new OAuth as a service features with Auth0.",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "NODE_OPTIONS='--experimental-global-webcrypto' nodemon --inspect=0.0.0.0:5865 server.js",
+    "debug": "NODE_OPTIONS='--experimental-global-webcrypto' nodemon --inspect=0.0.0.0:5865 --inspect-brk server.js",
     "reset-tenant": "node scripts/reset_tenant.js"
   },
   "author": "",
@@ -17,7 +18,7 @@
     "dotenv": "^2.0.0",
     "dpop": "^1.0.0",
     "express": "^4.17.1",
-    "express-openid-connect": "^2.0.0",
+    "express-openid-connect": "^2.8.0",
     "express-session": "^1.14.1",
     "jade": "^1.11.0",
     "jwt-decode": "^2.2.0",
@@ -42,5 +43,9 @@
     ],
     "name": "node-hosted-demo",
     "alias": "node-hosted-demo"
+  },
+  "engines": {
+    "node": ">=^18",
+    "npm": ">=7"
   }
 }
