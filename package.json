@@ -45,7 +45,7 @@
     "alias": "node-hosted-demo"
   },
   "engines": {
-    "node": ">=^18",
+    "node": ">=18",
     "npm": ">=7"
   }
 }
