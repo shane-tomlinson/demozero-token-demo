@@ -4,7 +4,7 @@
   "description": "This is a prototype nodejs quickstart project to demonstrate new OAuth as a service features with Auth0.",
   "main": "app.js",
   "scripts": {
-    "start": "NODE_OPTIONS='--experimental-global-webcrypto --trace-warnings' nodemon --inspect=0.0.0.0:5865 server.js",
+    "start": "NODE_OPTIONS='--experimental-global-webcrypto' nodemon --inspect=0.0.0.0:5865 server.js",
     "debug": "NODE_OPTIONS='--experimental-global-webcrypto' nodemon --inspect=0.0.0.0:5865 --inspect-brk server.js",
     "reset-tenant": "node scripts/reset_tenant.js"
   },
