@@ -2,59 +2,17 @@ const express = require('express');
 const path = require('path');
 const logger = require('morgan');
 const session = require('express-session');
-const passport = require('passport');
-const Auth0Strategy = require('passport-auth0');
-const SamlStrategy = require('passport-wsfed-saml2').Strategy;
-const flash = require('req-flash');
-const bodyParser = require('body-parser');
-const { APP_CALLBACK_URL } = require('./lib/constants');
-const { getEnv } = require('./lib/env');
-const routes = require('./routes/index');
-const user = require('./routes/user');
-const { getKeypair } = require("./lib/dpop");
+const passport = require("passport");
+const flash = require("req-flash");
+const bodyParser = require("body-parser");
+const routes = require("./routes/index");
+const user = require("./routes/user");
+const auth0StrategyBuilder = require("./lib/strategies/auth0");
+const samlStrategyBuilder = require("./lib/strategies/saml");
 
 module.exports = async () => {
-  const keypair = await getKeypair();
-  const auth0Strategy = new Auth0Strategy(
-    {
-      domain: getEnv().AUTH0_DOMAIN,
-      clientID: getEnv().APP_CLIENT_ID,
-      clientSecret: getEnv().APP_CLIENT_SECRET,
-      callbackURL: APP_CALLBACK_URL,
-      dpopKeypair: keypair,
-    },
-    function (accessToken, refreshToken, extraParams, profile, done) {
-      // accessToken is the JWT access token
-      // extraParams.id_token is the JWT id token
-      // profile has all the information from the user
-      extraParams.refresh_token = refreshToken;
-
-      return done(null, {
-        profile: profile,
-        extraParams: extraParams,
-      });
-    }
-  );
-
-  const samlStrategy = new SamlStrategy(
-    {
-      protocol: "samlp",
-      realm: "urn:test-app",
-      path: "/saml/callback",
-      identityProviderUrl: `https://${getEnv().AUTH0_DOMAIN}/samlp/${
-        getEnv().SAML_APP_CLIENT_ID
-      }`,
-      cert: getEnv().SAML_CERT,
-    },
-    (profile, done) => {
-      return done(null, {
-        profile: profile,
-      });
-    }
-  );
-
-  passport.use(auth0Strategy);
-  passport.use(samlStrategy);
+  passport.use(await auth0StrategyBuilder());
+  passport.use(await samlStrategyBuilder());
 
   // you can use this section to keep a smaller payload
   passport.serializeUser(function (user, done) {
