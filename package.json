@@ -21,6 +21,7 @@
     "express-openid-connect": "^2.8.0",
     "express-session": "^1.14.1",
     "jade": "^1.11.0",
+    "jose": "^4.9.3",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.11",
     "morgan": "^1.7.0",
