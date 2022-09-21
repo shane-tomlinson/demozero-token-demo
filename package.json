@@ -15,7 +15,6 @@
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "^1.4.3",
     "dotenv": "^2.0.0",
-    "dpop": "^1.0.0",
     "express": "^4.17.1",
     "express-openid-connect": "^2.0.0",
     "express-session": "^1.14.1",
