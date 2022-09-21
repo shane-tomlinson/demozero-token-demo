@@ -42,7 +42,11 @@ block content
         div(class="card-body")
           p(class="card-text") Use a pushed authorization request (PAR)
           a(href="loginWithPar")
-            button(id="signinButton" class="btn btn-primary") Login with PAR
+          form(name="rar" method="post" action="rar")
+            div(class="form-group")
+              label(for="authorization_details") authorization_details
+              textarea(id="authorization_details" name="authorization_details" class="form-control" placeholder='[{"type":"payment-initiation"}]') [{"type":"payment-initiation", "merchant":"Deliveroo", "amount": "£16.76"}]
+            input(type="submit" value="Login with PAR" class="btn btn-primary")
     div(class="col-sm-6")
       div(class="card")
         h5(class="card-header") Login with RAR
