@@ -54,7 +54,7 @@ router.get("/", async function (req, res, next) {
 });
 
 router.get("/login", authenticate);
-router.get("/loginWithPar", authenticateWithPar);
+router.post("/loginWithPar", authenticateWithPar);
 router.post("/rar", authenticateWithRar);
 router.post("/invite", inviteFlow);
 router.post("/orgselect", orgSelection);
