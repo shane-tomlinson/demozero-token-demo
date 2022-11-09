@@ -33,8 +33,12 @@ block content
         h5(class="card-header") Login with no organization
         div(class="card-body")
           p(class="card-text") Omit the organization parameter completely
-          a(href="login")
-            button(id="signinButton" class="btn btn-primary") Login with no organization
+          form(name="login" method="get" action="login")
+            input(type="submit" value="Login with no organization" class="btn btn-primary" )
+            div
+              label
+                input(type="checkbox", name="scalogin")
+                = " SCA login"
   div(class="row mt-3")
     div(class="col-sm-6")
       div(class="card")
