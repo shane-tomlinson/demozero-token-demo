@@ -49,7 +49,7 @@ block content
           form(name="par" method="post" action="loginWithPar")
             div(class="form-group")
               label(for="authorization_details") authorization_details
-              textarea(id="authorization_details" name="authorization_details" class="form-control" placeholder='[{"type":"payment-initiation"}]') [{"type":"payment-initiation", "merchant":"Deliveroo", "amount": "£16.76"}]
+              textarea(id="authorization_details" name="authorization_details" class="form-control" placeholder='[{"type":"urn:auth0:temp:sca"}]') [{"type":"urn:auth0:temp:sca", "merchant":"Deliveroo", "amount": "£16.76"}]
             input(type="submit" value="Login with PAR" class="btn btn-primary")
     div(class="col-sm-6")
       div(class="card")
@@ -59,7 +59,7 @@ block content
           form(name="rar" method="post" action="rar")
             div(class="form-group")
               label(for="authorization_details") authorization_details
-              textarea(id="authorization_details" name="authorization_details" class="form-control" placeholder='[{"type":"payment-initiation"}]') [{"type":"payment-initiation", "merchant":"Deliveroo", "amount": "£16.76"}]
+              textarea(id="authorization_details" name="authorization_details" class="form-control" placeholder='[{"type":"urn:auth0:temp:sca"}]') [{"type":"urn:auth0:temp:sca", "merchant":"Deliveroo", "amount": "£16.76"}]
             input(type="submit" value="Login with RAR" class="btn btn-primary")
   div(class="row mt-3")
     div(class="col-sm-12")
