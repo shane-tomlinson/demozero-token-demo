@@ -83,3 +83,6 @@ envs/
 .env
 set_env
 set_env.js
+
+# JWTCA keys
+keys/
