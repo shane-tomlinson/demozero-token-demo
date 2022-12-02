@@ -8,7 +8,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const {
   authenticate,
   authenticateWithPar,
-  authenticateWithRar,
   samlOrgSelection,
   orgSelection,
   getOrganizations,
@@ -55,7 +54,7 @@ router.get("/", async function (req, res, next) {
 
 router.get("/login", authenticate);
 router.post("/loginWithPar", authenticateWithPar);
-router.post("/rar", authenticateWithRar);
+router.post("/rar", authenticate);
 router.post("/invite", inviteFlow);
 router.post("/orgselect", orgSelection);
 
