@@ -47,6 +47,9 @@ router.get("/", async function (req, res, next) {
       scope: getEnv().scope,
       responseTypeList: RESPONSE_TYPES,
       selectedResponseType: getEnv().response_type,
+      pkce: getEnv().pkce,
+      pkceCodeChallengeMethodList: getEnv().pkce_code_challenge_method_list,
+      selectedPkceCodeChallengeMethod: getEnv().pkce_code_challenge_method,
     });
   } catch (error) {
     return next(error);

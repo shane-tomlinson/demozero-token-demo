@@ -134,8 +134,8 @@ block content
                   else
                     option(value=audience ) #{audience}
             div(class="form-group")
-              <label for="audience">Scope</label>
-              input(id="scope" name="scope" value="#{scope}", class="form-control", size="20")
+              <label for="scope">Scope</label>
+              input(id="scope" name="scope" value="#{scope}" class="form-control" size="20")
             div(class="form-group")
               <label for="response_type">Response type</label>
               select(id="response_type" name="response_type" class="form-control")
@@ -144,6 +144,19 @@ block content
                     option(value=responseType selected) #{responseType}
                   else
                     option(value=responseType) #{responseType}
+            div(class="form-group")
+              label
+                input(type="checkbox" name="pkce" id="pkce" checked=(pkce))
+                = " Use Proof Key for Code Exchange (PKCE)"
+            div(class="form-group")
+              <label for="pkce_code_challenge_method">PKCE Code Challenge Method</label>
+              select(id="pkce_code_challenge_method" name="pkce_code_challenge_method" class="form-control")
+                each pkceCodeChallengeMethod in pkceCodeChallengeMethodList 
+                  if (selectedPkceCodeChallengeMethod === pkceCodeChallengeMethod)
+                    option(value=pkceCodeChallengeMethod selected) #{pkceCodeChallengeMethod}
+                  else
+                    option(value=pkceCodeChallengeMethod) #{pkceCodeChallengeMethod}
+
             input(type="submit" value="Save Configuration" class="btn btn-primary")
             small(id="configurationHelp" class="form-text text-muted") Future calls to /authorize will use these values. They will be reset when the app restarts.
 
