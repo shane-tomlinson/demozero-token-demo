@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const handlers = require("../lib/handlers");
+const authAPI = require("../lib/handlers/auth_api");
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -82,7 +83,8 @@ router.get("/diag", (req, res) => {
 });
 
 router.get("/logout", (req, res) => {
-  req.logout();
+  req.session.user = null;
+  delete req.session.user;
   res.redirect("/");
 });
 
@@ -113,9 +115,48 @@ router.get(
     }
     next();
   },
-  passport.authenticate("auth0", {
-    failureRedirect: "/error",
-  }),
+  async (req, res, next) => {
+    const { error, error_description, code, state } = req.query;
+
+    console.log({ query: req.query });
+    if (state !== req.session.state) {
+      req.flash("error", "state mismatch");
+      return res.redirect("/error");
+    }
+
+    req.session.state = null;
+    delete req.session.state;
+
+    if (error || error_description) {
+      req.flash("error", error);
+      req.flash("error_description", error_description);
+      return res.redirect("/error");
+    }
+
+    try {
+      const params = {};
+      if (req.session.code_verifier) {
+        params.code_verifier = req.session.code_verifier;
+        req.session.code_verifier = null;
+        delete req.session.code_verifier;
+      }
+      const atData = await authAPI.getAccessTokenFromCode(code, params);
+      const userData = await authAPI.getUserInfo(atData.access_token);
+      req.session.user = {
+        profile: userData,
+        extraParams: {
+          access_token: atData.access_token,
+          refresh_token: atData.refresh_token,
+          id_token: atData.id_token
+        }
+      };
+
+      next();
+    } catch (error) {
+      console.log({ body: error.response.data });
+      next(error);
+    }
+  },
   (req, res) => {
     res.redirect(req.session.returnTo || "/user");
   }

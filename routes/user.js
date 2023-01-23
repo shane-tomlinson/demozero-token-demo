@@ -1,5 +1,4 @@
 const express = require('express');
-const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 const router = express.Router();
 const jwtDecode = require('jwt-decode');
 
@@ -7,8 +6,17 @@ const { getUserInfo, getRefreshToken } = require('../lib/handlers/auth_api');
 const { getEnv } = require('../lib/env');
 const { APP_LOGOUT_URL } = require('../lib/constants');
 
+const ensureLoggedIn = (req, res, next) => {
+  if (req.session.user) {
+    req.user = req.session.user;
+  } else {
+    return res.redirect('/');
+  }
+
+  next();
+}
+
 router.get('/', ensureLoggedIn, (req, res, next) => {
-  console.log({ user: req.user });
   renderUserPage(req, res);
 });
 
