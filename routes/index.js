@@ -92,10 +92,6 @@ router.get("/loggedOut", (req, res) => {
   res.json({ status: "logged out" });
 });
 
-router.post("/callback", (req, res) => {
-  res.redirect(req.session.returnTo || "/user");
-});
-
 router.post(
   "/saml/callback",
   passport.authenticate("wsfed-saml2", {
@@ -107,56 +103,46 @@ router.post(
   }
 );
 
+router.post(
+  "/callback",
+  (req, res, next) => {
+    const { error, error_description, code, state, id_token, access_token } =
+      req.body;
+
+    if (
+      !state &&
+      !code &&
+      !error &&
+      !error_description &&
+      !id_token &&
+      !access_token
+    ) {
+      res.redirect("/");
+    }
+
+    next();
+  },
+  callbackHandler,
+  (req, res) => {
+    res.redirect(req.session.returnTo || "/user");
+  }
+);
+
 router.get(
   "/callback",
   (req, res, next) => {
-    if (!req.query.code && !req.query.error) {
-      return res.redirect(req.session.returnTo || "/");
-    }
-    next();
-  },
-  async (req, res, next) => {
     const { error, error_description, code, state } = req.query;
 
-    if (state !== req.session.state) {
-      req.flash("error", "state mismatch");
-      return res.redirect("/error");
+    if (!state && !code && !error && !error_description) {
+      // assume this is an implicit flow and the parameters are on the URL.
+      // The front end will copy the params from the URL into a form and
+      // POST them to /callback
+      return res.render("callback", { title: "callback" });
     }
 
-    req.session.state = null;
-    delete req.session.state;
-
-    if (error || error_description) {
-      req.flash("error", error);
-      req.flash("error_description", error_description);
-      return res.redirect("/error");
-    }
-
-    const params = {};
-    if (req.session.code_verifier) {
-      params.code_verifier = req.session.code_verifier;
-      req.session.code_verifier = null;
-      delete req.session.code_verifier;
-    }
-
-    try {
-      const atData = await authAPI.getAccessTokenFromCode(code, params);
-
-      const userData = await authAPI.getUserInfo(atData.access_token);
-      req.session.user = {
-        profile: userData,
-        extraParams: {
-          access_token: atData.access_token,
-          refresh_token: atData.refresh_token,
-          id_token: atData.id_token,
-        },
-      };
-
-      next();
-    } catch (error) {
-      next(error);
-    }
+    next();
   },
+  callbackHandler,
   (req, res) => {
     res.redirect(req.session.returnTo || "/user");
   }
@@ -178,5 +164,65 @@ router.get("/unauthorized", (req, res) => {
 });
 
 router.post("/saveconfiguration", saveConfiguration);
+
+async function callbackHandler(req, res, next) {
+  const source = Object.keys(req.body).length ? req.body : req.query;
+
+  const { error, error_description, code, state, access_token, id_token } =
+    source;
+
+  if (state !== req.session.state) {
+    req.flash("error", "state mismatch");
+    return res.redirect("/error");
+  }
+
+  req.session.state = null;
+  delete req.session.state;
+
+  if (error || error_description) {
+    req.flash("error", error);
+    req.flash("error_description", error_description);
+    return res.redirect("/error");
+  }
+
+  try {
+    let userData = {
+      claim: "heyo",
+    };
+    let atData = {
+      access_token,
+      id_token,
+    };
+
+    if (id_token) {
+      // TODO - detached signature, check s_hash, c_hash
+    }
+
+    if (code) {
+      const params = {};
+      if (req.session.code_verifier) {
+        params.code_verifier = req.session.code_verifier;
+        req.session.code_verifier = null;
+        delete req.session.code_verifier;
+      }
+
+      atData = await authAPI.getAccessTokenFromCode(code, params);
+      userData = await authAPI.getUserInfo(atData.access_token);
+    }
+
+    req.session.user = {
+      profile: userData,
+      extraParams: {
+        access_token: atData.access_token,
+        refresh_token: atData.refresh_token,
+        id_token: atData.id_token,
+      },
+    };
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
 
 module.exports = router;

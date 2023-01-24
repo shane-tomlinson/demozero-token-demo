@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  div(class="jumbotron")
+    h1(class="display-4")= title
+    form(name="callback_form" method="post" action="/callback")
+      input(type="text", name="error")
+      input(type="text", name="error_description")
+      input(type="text", name="code")
+      input(type="text", name="state")
+      input(type="text", name="access_token")
+      input(type="text", name="id_token")
+      input(type="submit" value="Redirect" class="btn btn-primary")

@@ -1,40 +1,40 @@
 "use strict";
 
+const OAUTH_PARAM_NAMES = [
+  "error",
+  "error_description",
+  "code",
+  "state",
+  "access_token",
+  "id_token",
+];
+
 function hasImplicitOAuthParams(hashParams) {
-  return (
-    hashParams.has("code") ||
-    hashParams.has("id_token") ||
-    hashParams.hash("access_token") ||
-    hashParams.has("error")
-  );
+  return OAUTH_PARAM_NAMES.find((paramName) => hashParams.has(paramName));
 }
 
-(async () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const url = new URL(document.location);
-  const hashParams = new URLSearchParams(
-    document.location.hash.replace("#", "")
-  );
+  if (url.pathname === "/callback") {
+    const hashParams = new URLSearchParams(
+      document.location.hash.replace("#", "")
+    );
 
+    if (hasImplicitOAuthParams(hashParams)) {
+      // This path is followed when an implicit/hybrid flow is used. Take the
+      // parameters from the hash, put them into a form, and submit
 
-  if (url.pathname === "/" && hasImplicitOAuthParams(hashParams)) {
-    // This path is followed when an implicit/hybrid flow is used. We redirect back
-    // to callback pushing the hash parameters onto the query parameters and
-    // retry.
+      OAUTH_PARAM_NAMES.forEach((paramName) => {
+        if (hashParams.has(paramName)) {
+          document
+            .querySelector(`[name=${paramName}]`)
+            .setAttribute("value", hashParams.get(paramName));
+        }
+      });
 
-    // TODO - if an id_token is returned, check the detached signature.
-
-    // TODO - instead of doing everything on the URL (which is easy), POST
-    // to the backend.
-
-    url.pathname = "/callback";
-
-    // do not propagate id_token and access_token, we don't want them saved
-    // in browser history.
-    hashParams.delete('id_token');
-    hashParams.delete('access_token');
-    url.search = hashParams.toString();
-    url.hash = '';
-
-    document.location = url.toString();
+      document.callback_form.submit();
+    } else {
+      document.location = "/";
+    }
   }
-})();
+});
