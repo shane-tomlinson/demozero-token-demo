@@ -12,11 +12,6 @@ block content
         div(class="card-body")
           p(class="card-text") Standard OAuth/OIDC flow
           form(name="login" method="post" action="login")
-            div(class="form-group")
-              label
-                input(type="checkbox", name="send_authorization_details")
-                = " Send authorization_details"
-              textarea(id="authorization_details" name="authorization_details" class="form-control" placeholder='[{"type":"urn:auth0:temp:sca"}]') [{"type":"urn:auth0:temp:sca", "merchant":"Deliveroo", "amount": "£16.76"}]
             input(type="submit" value="Login with /authorize" class="btn btn-primary" )
             div
               label
@@ -29,11 +24,6 @@ block content
           p(class="card-text") Use a pushed authorization request (PAR)
           a(href="loginWithPar")
           form(name="par" method="post" action="loginWithPar")
-            div(class="form-group")
-              label
-                input(type="checkbox", name="send_authorization_details_par")
-                = " Send authorization_details"
-              textarea(id="authorization_details" name="authorization_details" class="form-control" placeholder='[{"type":"urn:auth0:temp:sca"}]') [{"type":"urn:auth0:temp:sca", "merchant":"Deliveroo", "amount": "£16.76"}]
             input(type="submit" value="Login with PAR" class="btn btn-primary")
   div(class="row mt-3")
     div(class="col-sm-12")
@@ -73,8 +63,13 @@ block content
                     option(value=pkceCodeChallengeMethod selected) #{pkceCodeChallengeMethod}
                   else
                     option(value=pkceCodeChallengeMethod) #{pkceCodeChallengeMethod}
+            div(class="form-group")
+              label
+                input(type="checkbox", name="send_authorization_details", checked=(sendAuthorizationDetails))
+                = " Send authorization_details"
+              textarea(id="authorization_details" name="authorization_details" class="form-control" placeholder='#{authorizationDetails}') #{authorizationDetails}
 
             input(type="submit" value="Save Configuration" class="btn btn-primary")
-            small(id="configurationHelp" class="form-text text-muted") Future calls to /authorize will use these values. They will be reset when the app restarts.
+            small(id="configurationHelp" class="form-text text-muted") Future calls to /authorize or /oauth/par will use these values. They will be reset when the app restarts.
 
     div(class="col-sm-6") &nbsp;

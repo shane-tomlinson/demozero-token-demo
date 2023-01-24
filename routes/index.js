@@ -50,6 +50,8 @@ router.get("/", async function (req, res, next) {
       pkce: getEnv().pkce,
       pkceCodeChallengeMethodList: getEnv().pkce_code_challenge_method_list,
       selectedPkceCodeChallengeMethod: getEnv().pkce_code_challenge_method,
+      sendAuthorizationDetails: getEnv().send_authorization_details,
+      authorizationDetails: getEnv().authorization_details
     });
   } catch (error) {
     return next(error);
