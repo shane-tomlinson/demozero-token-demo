@@ -213,6 +213,7 @@ async function callbackHandler(req, res, next) {
     req.session.user = {
       profile: userData,
       extraParams: {
+        detached_signature: id_token,
         access_token: atData.access_token,
         refresh_token: atData.refresh_token,
         id_token: atData.id_token,
