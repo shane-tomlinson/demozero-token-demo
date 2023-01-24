@@ -9,7 +9,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const {
   authenticate,
   authenticateWithPar,
-  authenticateWithRar,
   samlOrgSelection,
   orgSelection,
   getOrganizations,
@@ -57,9 +56,8 @@ router.get("/", async function (req, res, next) {
   }
 });
 
-router.get("/login", authenticate);
+router.post("/login", authenticate);
 router.post("/loginWithPar", authenticateWithPar);
-router.post("/rar", authenticateWithRar);
 router.post("/invite", inviteFlow);
 router.post("/orgselect", orgSelection);
 
@@ -168,8 +166,14 @@ router.post("/saveconfiguration", saveConfiguration);
 async function callbackHandler(req, res, next) {
   const source = Object.keys(req.body).length ? req.body : req.query;
 
-  const { error, error_description, code, state, access_token, id_token } =
-    source;
+  const {
+    error,
+    error_description,
+    code,
+    state,
+    access_token,
+    id_token: detached_signature,
+  } = source;
 
   if (state !== req.session.state) {
     req.flash("error", "state mismatch");
@@ -186,15 +190,14 @@ async function callbackHandler(req, res, next) {
   }
 
   try {
-    let userData = {
-      claim: "heyo",
-    };
+    let userData = {};
+
     let atData = {
       access_token,
-      id_token,
+      id_token: detached_signature,
     };
 
-    if (id_token) {
+    if (detached_signature) {
       // TODO - detached signature, check s_hash, c_hash
     }
 
@@ -207,13 +210,16 @@ async function callbackHandler(req, res, next) {
       }
 
       atData = await authAPI.getAccessTokenFromCode(code, params);
+    }
+
+    if (atData.access_token) {
       userData = await authAPI.getUserInfo(atData.access_token);
     }
 
     req.session.user = {
       profile: userData,
       extraParams: {
-        detached_signature: id_token,
+        detached_signature: detached_signature,
         access_token: atData.access_token,
         refresh_token: atData.refresh_token,
         id_token: atData.id_token,
