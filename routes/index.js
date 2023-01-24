@@ -118,7 +118,6 @@ router.get(
   async (req, res, next) => {
     const { error, error_description, code, state } = req.query;
 
-    console.log({ query: req.query });
     if (state !== req.session.state) {
       req.flash("error", "state mismatch");
       return res.redirect("/error");
@@ -133,27 +132,28 @@ router.get(
       return res.redirect("/error");
     }
 
+    const params = {};
+    if (req.session.code_verifier) {
+      params.code_verifier = req.session.code_verifier;
+      req.session.code_verifier = null;
+      delete req.session.code_verifier;
+    }
+
     try {
-      const params = {};
-      if (req.session.code_verifier) {
-        params.code_verifier = req.session.code_verifier;
-        req.session.code_verifier = null;
-        delete req.session.code_verifier;
-      }
       const atData = await authAPI.getAccessTokenFromCode(code, params);
+
       const userData = await authAPI.getUserInfo(atData.access_token);
       req.session.user = {
         profile: userData,
         extraParams: {
           access_token: atData.access_token,
           refresh_token: atData.refresh_token,
-          id_token: atData.id_token
-        }
+          id_token: atData.id_token,
+        },
       };
 
       next();
     } catch (error) {
-      console.log({ body: error.response.data });
       next(error);
     }
   },
