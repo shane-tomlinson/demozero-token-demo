@@ -1,5 +1,4 @@
 const express = require("express");
-const passport = require("passport");
 const router = express.Router();
 const handlers = require("../lib/handlers");
 const authAPI = require("../lib/handlers/auth_api");
@@ -9,11 +8,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const {
   authenticate,
   authenticateWithPar,
-  samlOrgSelection,
-  orgSelection,
-  getOrganizations,
-  getRoles,
-  getConnections,
 } = handlers.login;
 const { inviteFlow } = handlers.invite;
 const { getEnv } = require("../lib/env");
@@ -28,9 +22,6 @@ const { saveConfiguration } = handlers.configuration;
 
 router.get("/", async function (req, res, next) {
   try {
-    const organizations = await getOrganizations();
-    const roles = await getRoles();
-    const connections = await getConnections();
     const audienceList = [
       APP_RESOURCE_SERVER_IDENTIFIER,
       USERINFO_AUDIENCE,
@@ -39,9 +30,6 @@ router.get("/", async function (req, res, next) {
 
     res.render("index", {
       title: "Fake SaaS App",
-      organizations,
-      roles,
-      connections,
       selectedAudience: getEnv().audience,
       audienceList,
       scope: getEnv().scope,
@@ -51,7 +39,7 @@ router.get("/", async function (req, res, next) {
       pkceCodeChallengeMethodList: getEnv().pkce_code_challenge_method_list,
       selectedPkceCodeChallengeMethod: getEnv().pkce_code_challenge_method,
       sendAuthorizationDetails: getEnv().send_authorization_details,
-      authorizationDetails: getEnv().authorization_details
+      authorizationDetails: getEnv().authorization_details,
     });
   } catch (error) {
     return next(error);
@@ -61,16 +49,6 @@ router.get("/", async function (req, res, next) {
 router.post("/login", authenticate);
 router.post("/loginWithPar", authenticateWithPar);
 router.post("/invite", inviteFlow);
-router.post("/orgselect", orgSelection);
-
-router.post("/saml/orgselect", samlOrgSelection);
-router.get("/saml/login", (req, res) => {
-  const passportOptions = { failureRedirect: "/error", failureFlash: true };
-  if (req.query.organization) {
-    passportOptions.organization = req.query.organization;
-  }
-  passport.authenticate("wsfed-saml2", passportOptions)(req, res);
-});
 
 router.get("/diag", (req, res) => {
   res.json({
@@ -91,17 +69,6 @@ router.get("/logout", (req, res) => {
 router.get("/loggedOut", (req, res) => {
   res.json({ status: "logged out" });
 });
-
-router.post(
-  "/saml/callback",
-  passport.authenticate("wsfed-saml2", {
-    failureRedirect: "/error",
-    failureFlash: true,
-  }),
-  (req, res) => {
-    res.redirect("/user/saml");
-  }
-);
 
 router.post(
   "/callback",

@@ -23,8 +23,6 @@
     "lodash": "^4.17.11",
     "morgan": "^1.7.0",
     "nodemon": "^2.0.4",
-    "passport": "^0.3.2",
-    "passport-wsfed-saml2": "github:jhiner/passport-wsfed-saml2#orgs",
     "req-flash": "0.0.3",
     "uuid": "^9.0.0"
   },

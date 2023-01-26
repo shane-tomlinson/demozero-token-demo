@@ -2,39 +2,10 @@ const express = require('express');
 const path = require('path');
 const logger = require('morgan');
 const session = require('express-session');
-const passport = require('passport');
-const SamlStrategy = require('passport-wsfed-saml2').Strategy;
 const flash = require('req-flash');
 const bodyParser = require('body-parser');
-const { getEnv } = require('./lib/env');
 const routes = require('./routes/index');
 const user = require('./routes/user');
-
-const samlStrategy = new SamlStrategy(
-  {
-    protocol: 'samlp',
-    realm: 'urn:test-app',
-    path: '/saml/callback',
-    identityProviderUrl: `https://${getEnv().AUTH0_DOMAIN}/samlp/${getEnv().SAML_APP_CLIENT_ID}`,
-    cert: getEnv().SAML_CERT,
-  },
-  (profile, done) => {
-    return done(null, {
-      profile: profile,
-    });
-  }
-);
-
-passport.use(samlStrategy);
-
-// you can use this section to keep a smaller payload
-passport.serializeUser(function (user, done) {
-  done(null, user);
-});
-
-passport.deserializeUser(function (user, done) {
-  done(null, user);
-});
 
 const app = express();
 
@@ -53,8 +24,6 @@ app.use(
   })
 );
 app.use(flash());
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function authErrorHandler(req, res, next) {
