@@ -119,7 +119,11 @@ router.get("/error", (req, res) => {
   const error = req.flash("error");
   const error_description = req.flash("error_description");
 
-  req.logout();
+  delete req.session.user;
+  delete req.session.code_verifier;
+  delete req.session.state;
+  delete req.session.returnTo;
+
   res.render("error", {
     error: error,
     error_description: error_description,
