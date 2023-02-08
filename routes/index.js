@@ -1,14 +1,13 @@
 const express = require("express");
+const jwtDecode = require("jwt-decode");
+
 const router = express.Router();
 const handlers = require("../lib/handlers");
 const authAPI = require("../lib/handlers/auth_api");
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-const {
-  authenticate,
-  authenticateWithPar,
-} = handlers.login;
+const { authenticate, authenticateWithPar } = handlers.login;
 const { inviteFlow } = handlers.invite;
 const { getEnv } = require("../lib/env");
 const {
@@ -40,6 +39,8 @@ router.get("/", async function (req, res, next) {
       selectedPkceCodeChallengeMethod: getEnv().pkce_code_challenge_method,
       sendAuthorizationDetails: getEnv().send_authorization_details,
       authorizationDetails: getEnv().authorization_details,
+      responseModeList: getEnv().response_mode_list,
+      selectedResponseMode: getEnv().response_mode,
     });
   } catch (error) {
     return next(error);
@@ -73,8 +74,15 @@ router.get("/loggedOut", (req, res) => {
 router.post(
   "/callback",
   (req, res, next) => {
-    const { error, error_description, code, state, id_token, access_token } =
-      req.body;
+    const {
+      error,
+      error_description,
+      code,
+      state,
+      id_token,
+      access_token,
+      response,
+    } = req.body;
 
     if (
       !state &&
@@ -82,7 +90,8 @@ router.post(
       !error &&
       !error_description &&
       !id_token &&
-      !access_token
+      !access_token &&
+      !response
     ) {
       res.redirect("/");
     }
@@ -98,9 +107,9 @@ router.post(
 router.get(
   "/callback",
   (req, res, next) => {
-    const { error, error_description, code, state } = req.query;
+    const { error, error_description, code, state, response } = req.query;
 
-    if (!state && !code && !error && !error_description) {
+    if (!state && !code && !error && !error_description && !response) {
       // assume this is an implicit flow and the parameters are on the URL.
       // The front end will copy the params from the URL into a form and
       // POST them to /callback
@@ -137,7 +146,13 @@ router.get("/unauthorized", (req, res) => {
 router.post("/saveconfiguration", saveConfiguration);
 
 async function callbackHandler(req, res, next) {
-  const source = Object.keys(req.body).length ? req.body : req.query;
+  let source = Object.keys(req.body).length ? req.body : req.query;
+
+  const response = source.response;
+  if (response) {
+    // we have a JWT response. Decode
+    source = jwtDecode(response);
+  }
 
   const {
     error,
@@ -148,6 +163,7 @@ async function callbackHandler(req, res, next) {
     id_token: detached_signature,
   } = source;
 
+  
   if (state !== req.session.state) {
     req.flash("error", "state mismatch");
     return res.redirect("/error");

@@ -7,6 +7,7 @@ const OAUTH_PARAM_NAMES = [
   "state",
   "access_token",
   "id_token",
+  "response"
 ];
 
 function hasImplicitOAuthParams(hashParams) {

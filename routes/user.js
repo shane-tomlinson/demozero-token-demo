@@ -56,6 +56,7 @@ const renderUserPage = (req, res, data = {}) => {
   let decodedAccessToken = "";
 
   try {
+    // TODO rather than just decoding, verify JWT.
     decodedDetachedSignature = jwtDecode(detachedSignature);
   } catch (error) {
     decodedDetachedSignature = "Unable to decode";

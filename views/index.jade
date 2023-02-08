@@ -48,6 +48,14 @@ block content
                   else
                     option(value=responseType) #{responseType}
             div(class="form-group")
+              <label for="response_mode">Response Mode</label>
+              select(id="response_mode" name="response_mode" class="form-control")
+                each responseMode in responseModeList 
+                  if (selectedResponseMode === responseMode)
+                    option(value=responseMode selected) #{responseMode}
+                  else
+                    option(value=responseMode) #{responseMode}
+            div(class="form-group")
               label
                 input(type="checkbox" name="pkce" id="pkce" checked=(pkce))
                 = " Use Proof Key for Code Exchange (PKCE)"
