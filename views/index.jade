@@ -57,6 +57,10 @@ block content
                     option(value=responseMode) #{responseMode}
             div(class="form-group")
               label
+                input(type="checkbox" name="owp" id="owp" checked=(owp))
+                = " Use owp=true"
+            div(class="form-group")
+              label
                 input(type="checkbox" name="pkce" id="pkce" checked=(pkce))
                 = " Use Proof Key for Code Exchange (PKCE)"
             div(class="form-group")
@@ -67,6 +71,9 @@ block content
                     option(value=pkceCodeChallengeMethod selected) #{pkceCodeChallengeMethod}
                   else
                     option(value=pkceCodeChallengeMethod) #{pkceCodeChallengeMethod}
+            div(class="form-group")
+              label(for="redirect_uri") Redirect URI
+              input(type="text", name="redirect_uri", value=(redirectURI)  class="form-control")
             div(class="form-group")
               label
                 input(type="checkbox", name="send_authorization_details", checked=(sendAuthorizationDetails))

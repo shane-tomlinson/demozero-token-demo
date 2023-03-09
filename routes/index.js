@@ -28,19 +28,21 @@ router.get("/", async function (req, res, next) {
     ];
 
     res.render("index", {
-      title: "Fake SaaS App",
-      selectedAudience: getEnv().audience,
       audienceList,
-      scope: getEnv().scope,
-      responseTypeList: RESPONSE_TYPES,
-      selectedResponseType: getEnv().response_type,
+      authorizationDetails: getEnv().authorization_details,
+      owp: getEnv().owp,
       pkce: getEnv().pkce,
       pkceCodeChallengeMethodList: getEnv().pkce_code_challenge_method_list,
-      selectedPkceCodeChallengeMethod: getEnv().pkce_code_challenge_method,
-      sendAuthorizationDetails: getEnv().send_authorization_details,
-      authorizationDetails: getEnv().authorization_details,
+      redirectURI: getEnv().redirect_uri,
       responseModeList: getEnv().response_mode_list,
+      responseTypeList: RESPONSE_TYPES,
+      scope: getEnv().scope,
+      selectedAudience: getEnv().audience,
+      selectedPkceCodeChallengeMethod: getEnv().pkce_code_challenge_method,
       selectedResponseMode: getEnv().response_mode,
+      selectedResponseType: getEnv().response_type,
+      sendAuthorizationDetails: getEnv().send_authorization_details,
+      title: "Fake SaaS App",
     });
   } catch (error) {
     return next(error);
