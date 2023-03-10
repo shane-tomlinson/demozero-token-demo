@@ -166,7 +166,7 @@ async function callbackHandler(req, res, next) {
   } = source;
 
   
-  if (state !== req.session.state) {
+  if (req.session.state && state !== req.session.state) {
     req.flash("error", "state mismatch");
     return res.redirect("/error");
   }
