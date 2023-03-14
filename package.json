@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon server.js",
+    "start:debug": "nodemon --inspect-brk server.js",
     "reset-tenant": "node scripts/reset_tenant.js"
   },
   "author": "",
@@ -19,11 +20,13 @@
     "express-openid-connect": "^2.0.0",
     "express-session": "^1.14.1",
     "jade": "^1.11.0",
+    "jsonwebtoken": "^9.0.0",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.11",
     "morgan": "^1.7.0",
     "nodemon": "^2.0.4",
     "req-flash": "0.0.3",
+    "update-dotenv": "^1.1.1",
     "uuid": "^9.0.0"
   },
   "now": {
