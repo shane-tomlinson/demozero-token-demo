@@ -28,6 +28,7 @@ router.get("/", async function (req, res, next) {
     ];
 
     res.render("index", {
+      acrValues: getEnv().acr_values,
       audienceList,
       authorizationDetails: getEnv().authorization_details,
       owp: getEnv().owp,

@@ -75,6 +75,9 @@ block content
               label(for="redirect_uri") Redirect URI
               input(type="text", name="redirect_uri", value=(redirectURI)  class="form-control")
             div(class="form-group")
+              label(for="acr_values") acr_values
+              input(type="text", name="acr_values", value=(acrValues)  class="form-control")
+            div(class="form-group")
               label
                 input(type="checkbox", name="send_authorization_details", checked=(sendAuthorizationDetails))
                 = " Send authorization_details"
