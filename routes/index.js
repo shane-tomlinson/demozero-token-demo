@@ -1,5 +1,6 @@
 const express = require("express");
 const jwtDecode = require("jwt-decode");
+const pemToJwk = require("pem-jwk").pem2jwk;
 
 const router = express.Router();
 const handlers = require("../lib/handlers");
@@ -31,7 +32,9 @@ router.get("/", async function (req, res, next) {
       acrValues: getEnv().acr_values,
       audienceList,
       authorizationDetails: getEnv().authorization_details,
+      jar_enabled: getEnv().jar_enabled,
       owp: getEnv().owp,
+      par_enabled: getEnv().par_enabled,
       pkce: getEnv().pkce,
       pkceCodeChallengeMethodList: getEnv().pkce_code_challenge_method_list,
       redirectURI: getEnv().redirect_uri,
@@ -50,8 +53,12 @@ router.get("/", async function (req, res, next) {
   }
 });
 
-router.post("/login", authenticate);
-router.post("/loginWithPar", authenticateWithPar);
+router.post("/login", (req, res) => {
+  if (getEnv("par_enabled")) {
+    return authenticateWithPar(req, res);
+  }
+  authenticate(req, res);
+});
 router.post("/invite", inviteFlow);
 
 router.get("/diag", (req, res) => {
@@ -148,6 +155,22 @@ router.get("/unauthorized", (req, res) => {
 
 router.post("/saveconfiguration", saveConfiguration);
 
+router.get("/.well-known/jwks.json", (req, res) => {
+  const jwk = pemToJwk(getEnv("APP_JWTCA_PUBLIC_KEY"));
+  console.log("serving jwks.json");
+
+  setTimeout(() => {
+    res.status(200).json({
+      keys: [
+        {
+          ...jwk,
+          kid: getEnv("APP_JWTCA_KEY_ID"),
+        },
+      ],
+    });
+  }, 1000);
+});
+
 async function callbackHandler(req, res, next) {
   let source = Object.keys(req.body).length ? req.body : req.query;
 
@@ -166,7 +189,6 @@ async function callbackHandler(req, res, next) {
     id_token: detached_signature,
   } = source;
 
-  
   if (req.session.state && state !== req.session.state) {
     req.flash("error", "state mismatch");
     return res.redirect("/error");

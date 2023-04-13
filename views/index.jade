@@ -8,25 +8,25 @@ block content
   div(class="row mt-3")
     div(class="col-sm-6")
       div(class="card")
-        h5(class="card-header") Login with /authorize
+        h5(class="card-header") Login
         div(class="card-body")
           p(class="card-text") Standard OAuth/OIDC flow
           form(name="login" method="post" action="login")
-            input(type="submit" value="Login with /authorize" class="btn btn-primary" )
-    div(class="col-sm-6")
-      div(class="card")
-        h5(class="card-header") Login with PAR
-        div(class="card-body")
-          p(class="card-text") Use a pushed authorization request (PAR)
-          a(href="loginWithPar")
-          form(name="par" method="post" action="loginWithPar")
-            input(type="submit" value="Login with PAR" class="btn btn-primary")
+            input(type="submit" value="Login" class="btn btn-primary" )
   div(class="row mt-3")
     div(class="col-sm-12")
       div(class="card")
         h5(class="card-header") Runtime Configuration
         div(class="card-body")
           form(name="configuration" method="post" action="saveconfiguration")
+            div(class="form-group")
+              label
+                input(type="checkbox" name="par_enabled" id="par_enabled" checked=(par_enabled))
+                = " Use Pushed Authorization Requests (PAR)"
+            div(class="form-group")
+              label
+                input(type="checkbox" name="jar_enabled" id="jar_enabled" checked=(jar_enabled))
+                = " Use JWT-Secured Authorization Request (JAR)"
             div(class="form-group")
               <label for="audience">Audience</label>
               select(id="audience" name="audience" class="form-control")
