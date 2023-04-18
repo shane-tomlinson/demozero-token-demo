@@ -1,3 +1,4 @@
+const jose = require("jose");
 const express = require("express");
 const jwtDecode = require("jwt-decode");
 const pemToJwk = require("pem-jwk").pem2jwk;
@@ -155,20 +156,28 @@ router.get("/unauthorized", (req, res) => {
 
 router.post("/saveconfiguration", saveConfiguration);
 
-router.get("/.well-known/jwks.json", (req, res) => {
-  const jwk = pemToJwk(getEnv("APP_JWTCA_PUBLIC_KEY"));
-  console.log("serving jwks.json");
+router.get("/.well-known/jwks.json", async (req, res) => {
+  const jwtcaJWK = await jose.exportJWK(
+    await jose.importSPKI(getEnv("APP_JWTCA_PUBLIC_KEY"))
+  );
+  const jarJWK = await jose.exportJWK(
+    await jose.importSPKI(getEnv("APP_JAR_PUBLIC_KEY"))
+  );
+  const keys = [
+    {
+      ...jarJWK,
+      kid: getEnv("APP_JAR_KEY_ID"),
+    },
+    {
+      ...jwtcaJWK,
+      kid: getEnv("APP_JWTCA_KEY_ID"),
 
-  setTimeout(() => {
-    res.status(200).json({
-      keys: [
-        {
-          ...jwk,
-          kid: getEnv("APP_JWTCA_KEY_ID"),
-        },
-      ],
-    });
-  }, 1000);
+    },
+  ];
+  console.log("serving jwks.json", keys);
+  res.status(200).setHeader("content-type", "application/jwk-set+json").json({
+    keys,
+  });
 });
 
 async function callbackHandler(req, res, next) {
