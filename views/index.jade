@@ -28,6 +28,14 @@ block content
                 input(type="checkbox" name="jar_enabled" id="jar_enabled" checked=(jar_enabled))
                 = " Use JWT-Secured Authorization Request (JAR)"
             div(class="form-group")
+              <label for="app_client_authentication_method">Client Authentication</label>
+              select(id="app_client_authentication_method" name="app_client_authentication_method" class="form-control")
+                each clientAuthenticationMethod in clientAuthenticationMethods
+                  if (selectedClientAuthenticationMethod === clientAuthenticationMethod)
+                    option(value=clientAuthenticationMethod selected) #{clientAuthenticationMethod}
+                  else
+                    option(value=clientAuthenticationMethod ) #{clientAuthenticationMethod}
+            div(class="form-group")
               <label for="audience">Audience</label>
               select(id="audience" name="audience" class="form-control")
                 option

@@ -33,6 +33,7 @@ router.get("/", async function (req, res, next) {
       acrValues: getEnv().acr_values,
       audienceList,
       authorizationDetails: getEnv().authorization_details,
+      clientAuthenticationMethods: getEnv().client_authentication_methods_list,
       jar_enabled: getEnv().jar_enabled,
       owp: getEnv().owp,
       par_enabled: getEnv().par_enabled,
@@ -47,6 +48,7 @@ router.get("/", async function (req, res, next) {
       selectedResponseMode: getEnv().response_mode,
       selectedResponseType: getEnv().response_type,
       sendAuthorizationDetails: getEnv().send_authorization_details,
+      selectedClientAuthenticationMethod: getEnv("app_client_authentication_method"),
       title: "Fake SaaS App",
     });
   } catch (error) {
