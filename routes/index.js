@@ -14,8 +14,7 @@ const { inviteFlow } = handlers.invite;
 const { getEnv } = require("../lib/env");
 const {
   APP_RESOURCE_SERVER_IDENTIFIER,
-  USERINFO_AUDIENCE,
-  API2_AUDIENCE,
+  AUDIENCES,
   RESPONSE_TYPES,
 } = require("../lib/constants");
 
@@ -25,8 +24,7 @@ router.get("/", async function (req, res, next) {
   try {
     const audienceList = [
       APP_RESOURCE_SERVER_IDENTIFIER,
-      USERINFO_AUDIENCE,
-      API2_AUDIENCE,
+      ...AUDIENCES,
     ];
 
     res.render("index", {
@@ -235,6 +233,7 @@ async function callbackHandler(req, res, next) {
       }
 
       atData = await authAPI.getAccessTokenFromCode(code, params);
+      console.log({atData})
     }
 
     if (atData.access_token) {
