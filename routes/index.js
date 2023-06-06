@@ -31,6 +31,7 @@ router.get("/", async function (req, res, next) {
       acrValues: getEnv().acr_values,
       audienceList,
       authorizationDetails: getEnv().authorization_details,
+      claims: getEnv().claims,
       clientAuthenticationMethods: getEnv().client_authentication_methods_list,
       jar_enabled: getEnv().jar_enabled,
       owp: getEnv().owp,
