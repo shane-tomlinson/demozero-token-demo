@@ -29,9 +29,9 @@ block content
                 = " Use JWT-Secured Authorization Request (JAR)"
             div(class="form-group")
               <label for="app_client_authentication_method">Client Authentication</label>
-              select(id="app_client_authentication_method" name="app_client_authentication_method" class="form-control")
+              select(id="app_client_authentication_method" name="app_client_authentication_method" class="form-control" multiple)
                 each clientAuthenticationMethod in clientAuthenticationMethods
-                  if (selectedClientAuthenticationMethod === clientAuthenticationMethod)
+                  if (selectedClientAuthenticationMethod.indexOf(clientAuthenticationMethod) > -1)
                     option(value=clientAuthenticationMethod selected) #{clientAuthenticationMethod}
                   else
                     option(value=clientAuthenticationMethod ) #{clientAuthenticationMethod}

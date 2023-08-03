@@ -22,32 +22,31 @@ const { saveConfiguration } = handlers.configuration;
 
 router.get("/", async function (req, res, next) {
   try {
-    const audienceList = [
-      APP_RESOURCE_SERVER_IDENTIFIER,
-      ...AUDIENCES,
-    ];
+    const audienceList = [APP_RESOURCE_SERVER_IDENTIFIER, ...AUDIENCES];
 
     res.render("index", {
-      acrValues: getEnv().acr_values,
+      acrValues: getEnv("acr_values"),
       audienceList,
-      authorizationDetails: getEnv().authorization_details,
-      claims: getEnv().claims,
-      clientAuthenticationMethods: getEnv().client_authentication_methods_list,
-      jar_enabled: getEnv().jar_enabled,
-      owp: getEnv().owp,
-      par_enabled: getEnv().par_enabled,
-      pkce: getEnv().pkce,
-      pkceCodeChallengeMethodList: getEnv().pkce_code_challenge_method_list,
-      redirectURI: getEnv().redirect_uri,
-      responseModeList: getEnv().response_mode_list,
+      authorizationDetails: getEnv("authorization_details"),
+      claims: getEnv("claims"),
+      clientAuthenticationMethods: getEnv("client_authentication_methods_list"),
+      jar_enabled: getEnv("jar_enabled"),
+      owp: getEnv("owp"),
+      par_enabled: getEnv("par_enabled"),
+      pkce: getEnv("pkce"),
+      pkceCodeChallengeMethodList: getEnv("pkce_code_challenge_method_list"),
+      redirectURI: getEnv("redirect_uri"),
+      responseModeList: getEnv("response_mode_list"),
       responseTypeList: RESPONSE_TYPES,
-      scope: getEnv().scope,
-      selectedAudience: getEnv().audience,
-      selectedPkceCodeChallengeMethod: getEnv().pkce_code_challenge_method,
-      selectedResponseMode: getEnv().response_mode,
-      selectedResponseType: getEnv().response_type,
-      sendAuthorizationDetails: getEnv().send_authorization_details,
-      selectedClientAuthenticationMethod: getEnv("app_client_authentication_method"),
+      scope: getEnv("scope"),
+      selectedAudience: getEnv("audience"),
+      selectedPkceCodeChallengeMethod: getEnv("pkce_code_challenge_method"),
+      selectedResponseMode: getEnv("response_mode"),
+      selectedResponseType: getEnv("response_type"),
+      sendAuthorizationDetails: getEnv("send_authorization_details"),
+      selectedClientAuthenticationMethod: getEnv(
+        "app_client_authentication_method"
+      ),
       title: "Fake SaaS App",
     });
   } catch (error) {
@@ -172,7 +171,6 @@ router.get("/.well-known/jwks.json", async (req, res) => {
     {
       ...jwtcaJWK,
       kid: getEnv("APP_JWTCA_KEY_ID"),
-
     },
   ];
   console.log("serving jwks.json", keys);
@@ -234,7 +232,7 @@ async function callbackHandler(req, res, next) {
       }
 
       atData = await authAPI.getAccessTokenFromCode(code, params);
-      console.log({atData})
+      console.log({ atData });
     }
 
     if (atData.access_token) {

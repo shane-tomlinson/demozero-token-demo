@@ -89,8 +89,8 @@ const renderUserPage = (req, res, data = {}) => {
     },
     config: {
       APP_LOGOUT_URL,
-      AUTH0_DOMAIN: getEnv().AUTH0_DOMAIN,
-      APP_CLIENT_ID: getEnv().APP_CLIENT_ID,
+      AUTH0_DOMAIN: getEnv("AUTH0_DOMAIN"),
+      APP_CLIENT_ID: getEnv("APP_CLIENT_ID"),
     },
   });
 };
@@ -108,8 +108,8 @@ const renderUserPageWithSAML = (req, res) => {
     title: "Fake SAML SaaS App",
     config: {
       APP_LOGOUT_URL,
-      AUTH0_DOMAIN: getEnv().AUTH0_DOMAIN,
-      APP_CLIENT_ID: getEnv().SAML_APP_CLIENT_ID,
+      AUTH0_DOMAIN: getEnv("AUTH0_DOMAIN"),
+      APP_CLIENT_ID: getEnv("SAML_APP_CLIENT_ID"),
     },
   });
 };
