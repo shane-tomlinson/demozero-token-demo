@@ -15,14 +15,22 @@ block content
       div(id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion")
         div(class="card-body")
           pre
-            code #{JSON.stringify(decodedDetachedSignature, null, 4)}
+            h6 header
+            code #{JSON.stringify(decodedDetachedSignature.header, null, 4)}
+          pre
+            h6 payload
+            code #{JSON.stringify(decodedDetachedSignature.payload, null, 4)}
       div(class="card-header" id="headingTwo")
         h5(class="mb-0")
           button(class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo") ID Token Payload
       div(id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion")
         div(class="card-body")
           pre
-            code #{JSON.stringify(decodedIDToken, null, 4)}
+            h6 header
+            code #{JSON.stringify(decodedIDToken.header, null, 4)}
+          pre
+            h6 payload
+            code #{JSON.stringify(decodedIDToken.payload, null, 4)}
     div(class="card")
       div(class="card-header" id="headingThree")
         h5(class="mb-0")
@@ -30,7 +38,11 @@ block content
       div(id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion")
         div(class="card-body")
           pre
-            code #{JSON.stringify(decodedAccessToken, null, 4)}
+            h6 header
+            code #{JSON.stringify(decodedAccessToken.header, null, 4)}
+          pre
+            h6 payload
+            code #{JSON.stringify(decodedAccessToken.payload, null, 4)}
     div(class="card")
       div(class="card-header" id="headingFour")
         h5(class="mb-0")

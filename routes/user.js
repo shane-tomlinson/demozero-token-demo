@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const jwtDecode = require("jwt-decode");
+const jsonwebtoken = require("jsonwebtoken");
 
 const { getUserInfo, getRefreshToken } = require("../lib/handlers/auth_api");
 const { getEnv } = require("../lib/env");
@@ -48,28 +48,31 @@ router.get("/userinfo", ensureLoggedIn, async (req, res, next) => {
 });
 
 const renderUserPage = (req, res, data = {}) => {
-  const detachedSignature = data.detachedSignature || req.user.extraParams.detached_signature;
+  const detachedSignature =
+    data.detachedSignature || req.user.extraParams.detached_signature;
   const idToken = data.idToken || req.user.extraParams.id_token;
   const accessToken = data.accessToken || req.user.extraParams.access_token;
-  let decodedDetachedSignature = ""
+  let decodedDetachedSignature = "";
   let decodedIDToken = "";
   let decodedAccessToken = "";
 
   try {
     // TODO rather than just decoding, verify JWT.
-    decodedDetachedSignature = jwtDecode(detachedSignature);
+    decodedDetachedSignature = jsonwebtoken.decode(detachedSignature, {
+      complete: true,
+    });
   } catch (error) {
     decodedDetachedSignature = "Unable to decode";
   }
 
   try {
-    decodedIDToken = jwtDecode(idToken);
+    decodedIDToken = jsonwebtoken.decode(idToken, { complete: true });
   } catch (error) {
     decodedIDToken = "Unable to decode";
   }
 
   try {
-    decodedAccessToken = jwtDecode(accessToken);
+    decodedAccessToken = jsonwebtoken.decode(accessToken, { complete: true });
   } catch (error) {
     decodedAccessToken = "Unable to decode";
   }
