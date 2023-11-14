@@ -4,7 +4,7 @@
   "description": "This is a prototype nodejs quickstart project to demonstrate new OAuth as a service features with Auth0.",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "nodemon --inspect=7370 server.js",
     "start:debug": "nodemon --inspect-brk server.js",
     "reset-tenant": "node scripts/reset_tenant.js"
   },
@@ -25,7 +25,6 @@
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.11",
     "morgan": "^1.7.0",
-    "nodemon": "^2.0.4",
     "pem-jwk": "^2.0.0",
     "req-flash": "0.0.3",
     "update-dotenv": "^1.1.1",
@@ -44,5 +43,8 @@
     ],
     "name": "node-hosted-demo",
     "alias": "node-hosted-demo"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }

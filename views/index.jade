@@ -31,7 +31,7 @@ block content
               <label for="app_client_authentication_method">Client Authentication</label>
               select(id="app_client_authentication_method" name="app_client_authentication_method" class="form-control" multiple)
                 each clientAuthenticationMethod in clientAuthenticationMethods
-                  if (selectedClientAuthenticationMethod.indexOf(clientAuthenticationMethod) > -1)
+                  if (selectedClientAuthenticationMethod.includes(clientAuthenticationMethod))
                     option(value=clientAuthenticationMethod selected) #{clientAuthenticationMethod}
                   else
                     option(value=clientAuthenticationMethod ) #{clientAuthenticationMethod}
@@ -79,6 +79,14 @@ block content
                     option(value=pkceCodeChallengeMethod selected) #{pkceCodeChallengeMethod}
                   else
                     option(value=pkceCodeChallengeMethod) #{pkceCodeChallengeMethod}
+            div(class="form-group")
+              <label for="prompt">Prompt</label>
+              select(id="prompt" name="prompt" class="form-control" multiple)
+                each prompt in promptList 
+                  if (selectedPrompt.includes(prompt))
+                    option(value=prompt selected) #{prompt}
+                  else
+                    option(value=prompt) #{prompt}
             div(class="form-group")
               label(for="redirect_uri") Redirect URI
               input(type="text", name="redirect_uri", value=(redirectURI)  class="form-control")
