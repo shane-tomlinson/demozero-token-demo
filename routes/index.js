@@ -31,6 +31,7 @@ router.get("/", async function (req, res, next) {
       claims: getEnv("claims"),
       clientAuthenticationMethods: getEnv("client_authentication_methods_list"),
       jar_enabled: getEnv("jar_enabled"),
+      login_hint: getEnv("login_hint"),
       owp: getEnv("owp"),
       par_enabled: getEnv("par_enabled"),
       pkce: getEnv("pkce"),

@@ -101,6 +101,9 @@ block content
                 input(type="checkbox", name="send_authorization_details", checked=(sendAuthorizationDetails))
                 = " Send authorization_details"
               textarea(id="authorization_details" name="authorization_details" class="form-control" placeholder='#{authorizationDetails}') #{authorizationDetails}
+            div(class="form-group")
+              label(for="login_hint") login_hint
+              input(type="text", name="login_hint", value=(login_hint)  class="form-control")
 
             input(type="submit" value="Save Configuration" class="btn btn-primary")
             small(id="configurationHelp" class="form-text text-muted") Future calls to /authorize or /oauth/par will use these values. They will be reset when the app restarts.
