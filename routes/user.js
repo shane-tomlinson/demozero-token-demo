@@ -94,6 +94,7 @@ const renderUserPage = (req, res, data = {}) => {
       APP_LOGOUT_URL,
       AUTH0_DOMAIN: getEnv("AUTH0_DOMAIN"),
       APP_CLIENT_ID: getEnv("APP_CLIENT_ID"),
+      AUTH0_LOGOUT_ENDPOINT: getEnv("AUTH0_LOGOUT_ENDPOINT")
     },
   });
 };

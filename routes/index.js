@@ -49,7 +49,7 @@ router.get("/", async function (req, res, next) {
       sendAuthorizationDetails: getEnv("send_authorization_details"),
       selectedClientAuthenticationMethod: getEnv(
         "app_client_authentication_method"
-      ),
+      ) || "client_secret_post",
       title: "Fake SaaS App",
     });
   } catch (error) {
@@ -58,6 +58,12 @@ router.get("/", async function (req, res, next) {
 });
 
 router.post("/login", (req, res) => {
+  if (getEnv("par_enabled")) {
+    return authenticateWithPar(req, res);
+  }
+  authenticate(req, res);
+});
+router.get("/login", (req, res) => {
   if (getEnv("par_enabled")) {
     return authenticateWithPar(req, res);
   }
