@@ -1,7 +1,6 @@
 const jose = require("jose");
 const express = require("express");
 const jwtDecode = require("jwt-decode");
-const pemToJwk = require("pem-jwk").pem2jwk;
 
 const router = express.Router();
 const handlers = require("../lib/handlers");
@@ -16,6 +15,12 @@ const {
   APP_RESOURCE_SERVER_IDENTIFIER,
   AUDIENCES,
   RESPONSE_TYPES,
+  CIMD_ENDPOINT,
+  APP_LOGO_URI,
+  APP_CALLBACK_URL,
+  APP_URL,
+  JWKS_ENDPOINT,
+  POST_LOGOUT_ENDPOINT,
 } = require("../lib/constants");
 
 const { saveConfiguration } = handlers.configuration;
@@ -30,6 +35,7 @@ router.get("/", async function (req, res, next) {
       authorizationDetails: getEnv("authorization_details"),
       claims: getEnv("claims"),
       clientAuthenticationMethods: getEnv("client_authentication_methods_list"),
+      connection: getEnv("connection"),
       jar_enabled: getEnv("jar_enabled"),
       login_hint: getEnv("login_hint"),
       owp: getEnv("owp"),
@@ -41,15 +47,15 @@ router.get("/", async function (req, res, next) {
       responseModeList: getEnv("response_mode_list"),
       responseTypeList: RESPONSE_TYPES,
       scope: getEnv("scope"),
+      connection_scope: getEnv("connection_scope"),
       selectedAudience: getEnv("audience"),
       selectedPkceCodeChallengeMethod: getEnv("pkce_code_challenge_method"),
       selectedPrompt: getEnv("prompt"),
       selectedResponseMode: getEnv("response_mode"),
       selectedResponseType: getEnv("response_type"),
       sendAuthorizationDetails: getEnv("send_authorization_details"),
-      selectedClientAuthenticationMethod: getEnv(
-        "app_client_authentication_method"
-      ) || "client_secret_post",
+      selectedClientAuthenticationMethod:
+        getEnv("app_client_authentication_method") || "client_secret_post",
       title: "Fake SaaS App",
     });
   } catch (error) {
@@ -128,7 +134,13 @@ router.get(
   "/callback",
   (req, res, next) => {
     const { error, error_description, code, state, response } = req.query;
-
+    console.log("we even here?", {
+      error,
+      error_description,
+      code,
+      state,
+      response,
+    });
     if (!state && !code && !error && !error_description && !response) {
       // assume this is an implicit flow and the parameters are on the URL.
       // The front end will copy the params from the URL into a form and
@@ -143,6 +155,21 @@ router.get(
     res.redirect(req.session.returnTo || "/user");
   }
 );
+
+router.get("/cimd.json", (req, res) => {
+  res.status(200).json({
+    client_id: CIMD_ENDPOINT,
+    client_name: "Demozero",
+    client_uri: APP_URL,
+    logo_uri: APP_LOGO_URI,
+    redirect_uris: [APP_CALLBACK_URL],
+    grant_types: ["authorization_code"],
+    response_types: ["code"],
+    token_endpoint_auth_method: "private_key_jwt",
+    jwks_uri: JWKS_ENDPOINT,
+    post_logout_redirect_uris: [POST_LOGOUT_ENDPOINT]
+  });
+});
 
 router.get("/error", (req, res) => {
   const error = req.flash("error");
@@ -165,14 +192,34 @@ router.get("/unauthorized", (req, res) => {
 
 router.post("/saveconfiguration", saveConfiguration);
 
+router.post("/tokens-status-list-update", (req, res) => {
+  console.log("token status list update", { body: req.body });
+  res.status(200).json({});
+});
+
 router.get("/.well-known/jwks.json", async (req, res) => {
-  const jwtcaJWK = await jose.exportJWK(
-    await jose.importSPKI(getEnv("APP_JWTCA_PUBLIC_KEY"))
-  );
-  const jarJWK = await jose.exportJWK(
-    await jose.importSPKI(getEnv("APP_JAR_PUBLIC_KEY"))
-  );
-  const keys = [
+  let keys = [];
+
+  if (getEnv("APP_JWTCA_PUBLIC_KEY")) {
+    const jwtcaJWK = await jose.exportJWK(
+      await jose.importSPKI(getEnv("APP_JWTCA_PUBLIC_KEY"))
+    );
+    keys.push({
+      ...jwtcaJWK,
+      kid: getEnv("APP_JAR_KEY_ID"),
+    });
+  }
+
+  if (getEnv("APP_JAR_PUBLIC_KEY")) {
+    const jarJWK = await jose.exportJWK(
+      await jose.importSPKI(getEnv("APP_JAR_PUBLIC_KEY"))
+    );
+    keys.push({
+      ...jarJWK,
+      kid: getEnv("APP_JAR_KEY_ID"),
+    });
+  }
+  /*const keys = [
     {
       ...jarJWK,
       kid: getEnv("APP_JAR_KEY_ID"),
@@ -181,7 +228,7 @@ router.get("/.well-known/jwks.json", async (req, res) => {
       ...jwtcaJWK,
       kid: getEnv("APP_JWTCA_KEY_ID"),
     },
-  ];
+  ];*/
   console.log("serving jwks.json", keys);
   res.status(200).setHeader("content-type", "application/jwk-set+json").json({
     keys,
@@ -191,6 +238,7 @@ router.get("/.well-known/jwks.json", async (req, res) => {
 async function callbackHandler(req, res, next) {
   let source = Object.keys(req.body).length ? req.body : req.query;
 
+  console.log("callbackHandler", source, req.body, req.query);
   const response = source.response;
   if (response) {
     // we have a JWT response. Decode
@@ -232,6 +280,7 @@ async function callbackHandler(req, res, next) {
       // TODO - detached signature, check s_hash, c_hash
     }
 
+    console.log("callbackHandler", { code, atData });
     if (code) {
       const params = {};
       if (req.session.code_verifier) {
@@ -239,7 +288,7 @@ async function callbackHandler(req, res, next) {
         req.session.code_verifier = null;
         delete req.session.code_verifier;
       }
-
+      console.log("attempting token excahnge with code", code, params);
       atData = await authAPI.getAccessTokenFromCode(code, params);
       console.log({ atData });
     }

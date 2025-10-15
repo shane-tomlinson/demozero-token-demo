@@ -26,6 +26,16 @@ router.get("/refresh", ensureLoggedIn, async (req, res, next) => {
       req.user.extraParams.refresh_token
     );
 
+    req.session.user = {
+      ...req.session.user,
+      extraParams: {
+        ...req.session.extraParams,
+        access_token: refreshTokenResponse.access_token,
+        id_token: refreshTokenResponse.id_token,
+        refresh_token: refreshTokenResponse.refresh_token ||req.user.extraParams.refresh_token ,
+      }
+    };
+
     renderUserPage(req, res, {
       idToken: refreshTokenResponse.id_token,
       accessToken: refreshTokenResponse.access_token,

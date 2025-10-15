@@ -48,6 +48,9 @@ block content
               <label for="scope">Scope</label>
               input(id="scope" name="scope" value="#{scope}" class="form-control" size="20")
             div(class="form-group")
+              <label for="connection_scope">Connection Scope</label>
+              input(id="connection_scope" name="connection_scope" value="#{connection_scope}" class="form-control" size="20")
+            div(class="form-group")
               <label for="response_type">Response type</label>
               select(id="response_type" name="response_type" class="form-control")
                 each responseType in responseTypeList 
@@ -87,6 +90,9 @@ block content
                     option(value=prompt selected) #{prompt}
                   else
                     option(value=prompt) #{prompt}
+            div(class="form-group")
+              label(for="connection") Connection
+              input(type="text", name="connection", value=(connection)  class="form-control")
             div(class="form-group")
               label(for="redirect_uri") Redirect URI
               input(type="text", name="redirect_uri", value=(redirectURI)  class="form-control")
